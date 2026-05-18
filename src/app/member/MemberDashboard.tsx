@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Zap, LayoutDashboard, Link2, CheckSquare, BookOpen, LogOut, Menu, X, TrendingUp, Target, Coffee, Users } from 'lucide-react'
+import { Zap, LayoutDashboard, Link2, CheckSquare, BookOpen, LogOut, Menu, X, TrendingUp, Target, Coffee, Users, Megaphone, CalendarDays } from 'lucide-react'
 import DailyCheckTab from './tabs/DailyCheckTab'
 import BusinessTab from './tabs/BusinessTab'
 import AttendanceTab from './tabs/AttendanceTab'
@@ -11,9 +11,13 @@ import GrowthTab from './tabs/GrowthTab'
 import GoalsTab from './tabs/GoalsTab'
 import CoffeeChatTab from './tabs/CoffeeChatTab'
 import GroupTab from './tabs/GroupTab'
+import NoticesTab from './tabs/NoticesTab'
+import MemberEventsTab from './tabs/EventsTab'
 
 const NAV = [
   { id: 'home', label: '내 현황', icon: LayoutDashboard },
+  { id: 'notices', label: '공지사항', icon: Megaphone },
+  { id: 'events', label: '스팟 이벤트', icon: CalendarDays },
   { id: 'daily', label: '데일리 체크', icon: Link2 },
   { id: 'growth', label: '성장 그래프', icon: TrendingUp },
   { id: 'goals', label: '목표 & 희망', icon: Target },
@@ -138,6 +142,8 @@ export default function MemberDashboard({ profile }: { profile: Profile }) {
           </div>
         )}
 
+        {tab === 'notices' && <NoticesTab />}
+        {tab === 'events' && <MemberEventsTab userId={profile.id} />}
         {tab === 'daily' && <DailyCheckTab userId={profile.id} />}
         {tab === 'growth' && <GrowthTab userId={profile.id} profile={profile} />}
         {tab === 'goals' && <GoalsTab profile={profile} />}

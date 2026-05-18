@@ -1,11 +1,41 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight, QrCode, X, Maximize2 } from 'lucide-react'
+import QRCode from 'qrcode'
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://afterbiz-platform-ef8knd6x3-walkmakewell1-2506s-projects.vercel.app'
 
 type Member = { id: string; name: string; email: string }
 type AttendanceRecord = { user_id: string; status: string }
+
+function QRModal({ date, onClose }: { date: string; onClose: () => void }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+  const url = `${SITE_URL}/attend?date=${date}`
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      QRCode.toCanvas(canvasRef.current, url, {
+        width: 280, margin: 2,
+        color: { dark: '#000000', light: '#ffffff' }
+      })
+    }
+  }, [url])
+
+  return (
+    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4" onClick={onClose}>
+      <div className="bg-white rounded-3xl p-8 text-center max-w-sm w-full" onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"><X size={20} /></button>
+        <p className="text-sm font-semibold text-gray-500 mb-1">출석 QR 코드</p>
+        <p className="text-xl font-bold text-gray-900 mb-4">{date}</p>
+        <canvas ref={canvasRef} className="mx-auto rounded-xl" />
+        <p className="text-xs text-gray-400 mt-4">수강생이 스캔하면 자동으로 출석 처리됩니다</p>
+        <p className="text-xs text-gray-300 mt-1 break-all">{url}</p>
+      </div>
+    </div>
+  )
+}
 
 const STATUS = {
   present: { label: '출석', class: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/30' },
@@ -19,6 +49,7 @@ export default function AttendanceManageTab({ members }: { members: Member[] }) 
   const [date, setDate] = useState(today)
   const [records, setRecords] = useState<Record<string, string>>({})
   const [saving, setSaving] = useState<string | null>(null)
+  const [showQR, setShowQR] = useState(false)
 
   const shiftDay = (d: number) => {
     const nd = new Date(date)
@@ -58,6 +89,8 @@ export default function AttendanceManageTab({ members }: { members: Member[] }) 
 
   return (
     <div className="space-y-5">
+      {showQR && <QRModal date={date} onClose={() => setShowQR(false)} />}
+
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-lg font-bold text-white">출결 관리</h2>
@@ -65,6 +98,10 @@ export default function AttendanceManageTab({ members }: { members: Member[] }) 
         </div>
 
         <div className="flex items-center gap-2">
+          <button onClick={() => setShowQR(true)}
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg">
+            <QrCode size={15} /> QR 출석 코드
+          </button>
           <button onClick={() => shiftDay(-1)} className="p-2 bg-gray-800 border border-gray-700 rounded-lg hover:bg-gray-700 text-gray-400">
             <ChevronLeft size={16} />
           </button>

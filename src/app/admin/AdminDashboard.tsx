@@ -13,6 +13,7 @@ import ChecklistManageTab from './tabs/ChecklistManageTab'
 import RevenueTab from './tabs/RevenueTab'
 import ScheduleManageTab from './tabs/ScheduleManageTab'
 import BoardManageTab from './tabs/BoardManageTab'
+import EventsTab from './tabs/EventsTab'
 
 const ROLE_LABEL: Record<string, string> = {
   super_admin: '전체 관리자', admin_kihyun: '김기현', admin_youngeun: '이영은', member: '회원',
@@ -35,8 +36,9 @@ const NAV_GROUPS = [
   {
     label: '서비스',
     items: [
+      { id: 'events', label: '스팟 이벤트', icon: Zap },
       { id: 'schedule', label: '커피챗 스케줄', icon: Coffee },
-      { id: 'board', label: '게시판', icon: Megaphone },
+      { id: 'board', label: '공지사항', icon: Megaphone },
       { id: 'mentoring', label: '멘토링', icon: UserCheck },
       { id: 'revenue', label: '매출 관리', icon: DollarSign },
     ],
@@ -117,6 +119,7 @@ export default function AdminDashboard({ profile, members }: { profile: any; mem
       case 'schedule': return <div className="p-6 max-w-2xl"><ScheduleManageTab adminId={profile.id} /></div>
       case 'revenue': return <div className="p-6"><RevenueTab members={members} adminId={profile.id} /></div>
       case 'board': return <div className="p-6"><BoardManageTab adminId={profile.id} /></div>
+      case 'events': return <div className="p-6"><EventsTab adminId={profile.id} members={members} /></div>
       case 'mentoring': return <div className="p-6 text-gray-500 text-sm">멘토링 준비 중</div>
       case 'members': return (
         <div className="p-6">
